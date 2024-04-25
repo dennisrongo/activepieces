@@ -11,12 +11,12 @@ import {
 } from '@activepieces/pieces-common';
 
 export const webflowCommon = {
-  baseUrl: 'https://api.webflow.com/',
+  baseUrl: 'https://api.webflow.com',
   collectionFieldProperties: Property.DynamicProperties({
     displayName: 'Items',
     description: 'The values to insert',
     required: true,
-    refreshers: ['collection_id'],
+    refreshers: ['collection_id', 'site_id'],
     props: async ({ auth, site_id, collection_id }) => {
       if (
         !auth ||
@@ -25,6 +25,7 @@ export const webflowCommon = {
       ) {
         return {};
       }
+
       const authentication = auth as OAuth2PropertyValue;
       const values = await webflowCommon.getCollectionProperties(
         site_id,
@@ -33,18 +34,17 @@ export const webflowCommon = {
       );
 
       const fieldList = values.body.fields;
+      const properties: { [key: string]: any } = {};
 
-      const properties: {
-        [key: string]: any;
-      } = {};
-      for (const key in fieldList) {
-        properties[key] = Property.ShortText({
-          displayName: fieldList[key].toString(),
-          description: fieldList[key].toString(),
+      fieldList.forEach((field: { slug: string, name: string }) => {
+        properties[field.slug] = Property.ShortText({
+          displayName: field.name,
+          description: field.name,
           required: false,
           defaultValue: '',
         });
-      }
+      });
+
       return properties;
     },
   }),
@@ -68,7 +68,7 @@ export const webflowCommon = {
 
       const request: HttpRequest = {
         method: HttpMethod.GET,
-        url: 'https://api.webflow.com/sites',
+        url: `${webflowCommon.baseUrl}/sites`,
         authentication: {
           type: AuthenticationType.BEARER_TOKEN,
           token: accessToken,
@@ -110,7 +110,7 @@ export const webflowCommon = {
 
       const request: HttpRequest = {
         method: HttpMethod.GET,
-        url: `https://api.webflow.com/sites/${site_id}/collections`,
+        url: `${webflowCommon.baseUrl}/sites/${site_id}/collections`,
         authentication: {
           type: AuthenticationType.BEARER_TOKEN,
           token: accessToken,
@@ -152,7 +152,7 @@ export const webflowCommon = {
 
       const request: HttpRequest = {
         method: HttpMethod.GET,
-        url: `https://api.webflow.com/collections/${collection_id}/items`,
+        url: `${webflowCommon.baseUrl}/collections/${collection_id}/items`,
         authentication: {
           type: AuthenticationType.BEARER_TOKEN,
           token: accessToken,
@@ -194,7 +194,7 @@ export const webflowCommon = {
 
       const request: HttpRequest = {
         method: HttpMethod.GET,
-        url: `https://api.webflow.com/sites/${site}/orders`,
+        url: `${webflowCommon.baseUrl}/sites/${site}/orders`,
         authentication: {
           type: AuthenticationType.BEARER_TOKEN,
           token: accessToken,
@@ -236,7 +236,7 @@ export const webflowCommon = {
 
       const request: HttpRequest = {
         method: HttpMethod.GET,
-        url: `https://api.webflow.com/sites/${site}/products`,
+        url: `${webflowCommon.baseUrl}/sites/${site}/products`,
         authentication: {
           type: AuthenticationType.BEARER_TOKEN,
           token: accessToken,
@@ -265,7 +265,7 @@ export const webflowCommon = {
   ) => {
     const request: HttpRequest = {
       method: HttpMethod.GET,
-      url: `https://api.webflow.com/sites/${siteId}/collections/${collectionId}`,
+      url: `${webflowCommon.baseUrl}/collections/${collectionId}`,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -286,7 +286,7 @@ export const webflowCommon = {
   ) => {
     const request: HttpRequest = {
       method: HttpMethod.POST,
-      url: `https://api.webflow.com/sites/${siteId}/webhooks`,
+      url: `${webflowCommon.baseUrl}/sites/${siteId}/webhooks`,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -311,7 +311,7 @@ export const webflowCommon = {
   ) => {
     const request: HttpRequest = {
       method: HttpMethod.DELETE,
-      url: `https://api.webflow.com/sites/${siteId}/webhooks/${webhookId}`,
+      url: `${webflowCommon.baseUrl}/sites/${siteId}/webhooks/${webhookId}`,
 
       headers: {
         'Content-Type': 'application/json',

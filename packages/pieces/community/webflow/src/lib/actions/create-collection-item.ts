@@ -34,6 +34,7 @@ export const webflowCreateCollectionItem = createAction({
     const collectionId = configValue.propsValue['collection_id'];
     const isArchived = configValue.propsValue['is_archived'];
     const isDraft = configValue.propsValue['is_draft'];
+    const values = configValue.propsValue['values'];
 
     const request: HttpRequest = {
       method: HttpMethod.POST,
@@ -43,9 +44,11 @@ export const webflowCreateCollectionItem = createAction({
         token: accessToken,
       },
       body: {
-        fields: configValue.propsValue['values'],
-        isArchived,
-        isDraft,
+        fields: {
+          ...values,
+          _archived: isArchived,
+          _draft: isDraft
+        }
       },
     };
 

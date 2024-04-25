@@ -31,7 +31,7 @@ export const webflowUpdateCollectionItem = createAction({
       displayName: 'Is Draft',
       description: 'Whether the item is a draft or not',
       required: false,
-    }),
+    })
   },
 
   async run(configValue) {
@@ -40,6 +40,7 @@ export const webflowUpdateCollectionItem = createAction({
     const collectionItemId = configValue.propsValue['collection_item_id'];
     const isArchived = configValue.propsValue['is_archived'];
     const isDraft = configValue.propsValue['is_draft'];
+    const values = configValue.propsValue['values'];
 
     const request: HttpRequest = {
       method: HttpMethod.PUT,
@@ -48,10 +49,13 @@ export const webflowUpdateCollectionItem = createAction({
         type: AuthenticationType.BEARER_TOKEN,
         token: accessToken,
       },
+      // TODO: Automatically include 'slug' field in the request body
       body: {
-        fields: configValue.propsValue['values'],
-        isArchived,
-        isDraft,
+        fields: {
+          ...values,
+          _archived: isArchived,
+          _draft: isDraft
+        }
       },
     };
 
