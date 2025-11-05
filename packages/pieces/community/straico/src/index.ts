@@ -22,6 +22,7 @@ import { agentDelete } from './lib/actions/agent-delete';
 import { agentUpdate } from './lib/actions/agent-update';
 import { agentGet } from './lib/actions/agent-get';
 import { agentPromptCompletion } from './lib/actions/agent-prompt-completion';
+import { getElevenLabsVoices } from './lib/actions/tts-get-elevenlabs-voices';
 import { PieceCategory } from '@activepieces/shared';
 
 const markdownDescription = `
@@ -84,6 +85,7 @@ export const straico = createPiece({
     agentUpdate,
     agentGet,
     agentPromptCompletion,
+    getElevenLabsVoices,
     createCustomApiCallAction({
       auth: straicoAuth,
       baseUrl: () => baseUrlv1,
